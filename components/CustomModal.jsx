@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient"
 import OneScreen from "./modal_window/OneScreen"
 import TwoScreen from "./modal_window/TwoScreen"
 import ThreeScreen from "./modal_window/ThreeScreen"
+import { Button } from "react-native-paper"
 
 const CustomModal = ({ visible, onClose }) => {
   const [currentPage, setCurrentPage] = useState(0)
@@ -38,52 +39,47 @@ const CustomModal = ({ visible, onClose }) => {
       }}
     >
       <BlurView intensity={30} style={styles.blurArea}></BlurView>
+      <LinearGradient
+        colors={["#C3FFD4", "#CFCCFB", "#EFF9F2"]}
+        start={{ x: 1, y: 1 }}
+        end={{ x: 0, y: 0.5 }}
+        style={{ height: "100%" }}
+      >
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          {currentPage > 0 && (
+            <TouchableOpacity style={styles.buttonBack} onPress={goPrev}>
+              <View style={styles.circle}>
+                <Text style={{ fontWeight: "bold", fontSize: 15 }}>{"<"}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        {currentPage > 0 && (
-          <TouchableOpacity style={styles.buttonBack} onPress={goPrev}>
+          <View style={styles.counterPage}>
+            <Text style={{ fontSize: 16 }}>{currentPage + 1} / 3</Text>
+          </View>
+
+          <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
             <View style={styles.circle}>
-              <Text style={{ fontWeight: "bold", fontSize: 15 }}>{"<"}</Text>
+              <Text style={{ fontWeight: "bold", fontSize: 15 }}>{"X"}</Text>
             </View>
           </TouchableOpacity>
-        )}
-
-        <View style={styles.counterPage}>
-          <Text style={{ fontSize: 16 }}>{currentPage + 1} / 3</Text>
         </View>
 
-        <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
-          <View style={styles.circle}>
-            <Text style={{ fontWeight: "bold", fontSize: 15 }}>{"X"}</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+        <Swiper
+          ref={swiperRef}
+          style={styles.wrapper}
+          loop={false}
+          onIndexChanged={index => setCurrentPage(index)}
+        >
+          <OneScreen goNext={goNext} />
 
-      <Swiper
-        ref={swiperRef}
-        style={styles.wrapper}
-        loop={false}
-        onIndexChanged={index => setCurrentPage(index)}
-      >
-        <View>
-          <OneScreen />
+          <TwoScreen goNext={goNext} />
+
+          <ThreeScreen goNext={goNext} />
+        </Swiper>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          {/* МОЖЕТ НЕ ПОНАДОБИТСЯ, ЕСЛИ У МЕНЯ ПОЛУЧИТСЯ СДЕЛАТЬ КНОПКУ НАВИГАЦИИ В КАЖДОМ КОМПОНЕНТЕ ОТДЕЛЬНО  */}
         </View>
-        <View>
-          <TwoScreen />
-        </View>
-        <View>
-          <ThreeScreen />
-        </View>
-      </Swiper>
-      <LinearGradient
-        style={styles.modalView}
-        colors={["#FFCEB7", "#BACFFF", "#C7CFF2"]}
-        start={{ x: 1, y: 1 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <TouchableOpacity style={styles.button} onPress={goNext}>
-          <Text style={styles.buttonText}>Continue</Text>
-        </TouchableOpacity>
       </LinearGradient>
     </Modal>
   )
@@ -136,9 +132,7 @@ const styles = StyleSheet.create({
     width: 360,
     height: 60,
     borderRadius: 30,
-    padding: 10,
-    marginBottom: 15,
-    elevation: 2,
+    marginBottom: 170,
     backgroundColor: "#8B4CFC",
     alignItems: "center",
     justifyContent: "center",

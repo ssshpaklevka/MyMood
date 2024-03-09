@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+
 import {
   Text,
   View,
@@ -6,13 +7,15 @@ import {
   TextInput,
   Image,
   FlatList,
+  ScrollView,
+  TouchableOpacity,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import Emoji from "../Emojis/Emoji"
 
-export default function TwoScreen() {
+export default function TwoScreen({ goNext }) {
   return (
-    <View>
+    <ScrollView>
       <View style={{ alignItems: "center" }}>
         <Text
           style={{
@@ -45,8 +48,8 @@ export default function TwoScreen() {
         All emotions
       </Text>
 
-      <Emoji />
-    </View>
+      <Emoji goNext={goNext} />
+    </ScrollView>
   )
 }
 

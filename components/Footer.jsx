@@ -1,6 +1,5 @@
 import React, { useState } from "react"
-import { StyleSheet } from "react-native"
-import { NavigationContainer } from "@react-navigation/native"
+import { StyleSheet, View, TouchableOpacity } from "react-native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { Ionicons } from "@expo/vector-icons"
 import Home from "./screens/Home"
@@ -14,17 +13,23 @@ export default function Footer() {
 
   const [modalVisible, setModalVisible] = useState(false)
 
-  function openModal() {
-    setModalVisible(true)
-  }
+  const openModal = () => setModalVisible(true)
 
+  // function openModal() {
+  //   setModalVisible(true)
+  // }
+  // {
+  //   /* <CustomModal
+  //       visible={modalVisible}
+  //       onClose={() => setModalVisible(false)}
+  //     /> */
+  // }
   return (
-    <NavigationContainer>
+    <>
       <CustomModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
       />
-
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -69,27 +74,24 @@ export default function Footer() {
         />
         <Tab.Screen
           name='Add Mood'
-          component={Home} // Используйте временный компонент, например Home
-          listeners={() => ({
-            tabPress: e => {
-              // Предотвращаем стандартное поведение
-
-              e.preventDefault()
-              // Показываем Alert
-              openModal()
+          component={View} // Технический компонент, не будет использоваться
+          listeners={({ navigation }) => ({
+            tabPress: event => {
+              event.preventDefault() // Отмена стандартного поведения перехода
+              openModal() // Открытие модального окна
             },
           })}
           options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <Ionicons
-                name={focused ? "add-circle" : "add-circle-outline"}
-                size={size}
-                color={"green"}
-              />
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name='add-circle-outline' size={size} color={color} />
+            ),
+            tabBarButton: props => (
+              <TouchableOpacity {...props} onPress={openModal}>
+                <Ionicons name='add-circle' size={40} color={props.color} />
+              </TouchableOpacity>
             ),
           }}
         />
-
         <Tab.Screen
           options={{ headerShown: false, headerTitle: "History" }}
           name='History'
@@ -104,7 +106,7 @@ export default function Footer() {
           component={Settings}
         />
       </Tab.Navigator>
-    </NavigationContainer>
+    </>
   )
 }
 

@@ -1,15 +1,43 @@
 import React, { useState } from "react"
-import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native"
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Button,
+} from "react-native"
+import { useNavigation } from "@react-navigation/native"
+import * as SecureStore from "expo-secure-store"
 
-export default function OneScreen() {
+export default function OneScreen({ goNext }) {
+  const navigation = useNavigation()
+
   const [selectedEmoji, setSelectedEmoji] = useState("")
   const emojis = [
-    { key: "angry", img: require("../../assets/img/angryface.png") },
-    { key: "sad", img: require("../../assets/img/sadface.png") },
-    { key: "neutral", img: require("../../assets/img/neutralface.png") },
-    { key: "smile", img: require("../../assets/img/smileface.png") },
-    { key: "happy", img: require("../../assets/img/happyface.png") },
+    { key: "Angry", img: require("../../assets/img/angryface.png") },
+    { key: "Sad", img: require("../../assets/img/sadface.png") },
+    { key: "Neutral", img: require("../../assets/img/neutralface.png") },
+    { key: "Smile", img: require("../../assets/img/smileface.png") },
+    { key: "Happy", img: require("../../assets/img/happyface.png") },
   ]
+
+  const getBackgroundColor = emojiKey => {
+    switch (emojiKey) {
+      case "Angry":
+        return "#FF1F11"
+      case "Sad":
+        return "#FF5C00"
+      case "Neutral":
+        return "#FFD64F"
+      case "Smile":
+        return "#3686FF"
+      case "Happy":
+        return "#3CE862"
+      default:
+        return "transparent"
+    }
+  }
 
   return (
     <View style={styles.yourMood}>
@@ -21,23 +49,34 @@ export default function OneScreen() {
       </View>
       <View style={styles.selectMood}>
         <View style={styles.mood}>
-          <View style={styles.container}>
-            <View style={styles.emojiContainer}>
-              {emojis.map(emojis => (
-                <TouchableOpacity
-                  key={emojis.key}
-                  onPress={() => setSelectedEmoji(emojis.key)}
-                  style={styles.emojiButton}
-                >
+          <View style={styles.emojiContainer}>
+            {emojis.map(emojis => (
+              <TouchableOpacity
+                key={emojis.key}
+                onPress={async () => {
+                  setSelectedEmoji(emojis.key) // устанавливается выбранный emoji
+                }}
+                style={[
+                  styles.emojiButton,
+                  {
+                    backgroundColor:
+                      selectedEmoji === emojis.key
+                        ? getBackgroundColor(emojis.key)
+                        : "transparent",
+                  },
+                ]}
+              >
+                <View styles={styles.circle}>
                   <Image source={emojis.img} style={styles.emojiImage} />
-                </TouchableOpacity>
-              ))}
-            </View>
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
         <View
           style={{
             alignItems: "center",
+            paddingTop: 20,
           }}
         >
           {selectedEmoji && (
@@ -45,11 +84,20 @@ export default function OneScreen() {
           )}
         </View>
       </View>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <TouchableOpacity style={styles.button} onPress={goNext}>
+          <Text style={styles.buttonText}>Continue</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  selectedEmoji: {
+    backgroundColor: "#FFDE03", // or any other color
+    borderRadius: 20,
+  },
   yourMood: {
     marginTop: 30,
   },
@@ -69,16 +117,17 @@ const styles = StyleSheet.create({
   selectMood: {
     justifyContent: "center",
     width: "100%",
-    height: 127,
-    marginTop: 150,
+    marginTop: 130,
   },
   mood: {
+    height: 95,
     backgroundColor: "white",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    borderBottomWidth: 10,
-    borderBottomColor: "#8B4CFC",
+    borderRadius: 40,
+    // borderBottomWidth: 10,
+    // borderBottomColor: "#8B4CFC",
   },
   circle: {
     width: 64, // Задайте ширину и высоту по вашему желанию
@@ -94,7 +143,6 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
-    marginTop: 20,
   },
   emojiContainer: {
     flexDirection: "row",
@@ -103,16 +151,25 @@ const styles = StyleSheet.create({
   emojiButton: {
     padding: 10,
     alignItems: "center",
+    borderRadius: 50,
   },
   emojiImage: {
-    width: 40,
-    height: 40,
+    marginRight: 5,
+    marginLeft: 5,
+    width: 45,
+    height: 45,
   },
   selectedEmojiText: {
     fontSize: 24,
-
-    justifyContent: "center",
-    alignContent: "center",
+    fontWeight: "500",
+  },
+  button: {
+    width: 360,
+    height: 60,
+    borderRadius: 30,
+    marginBottom: 170,
+    backgroundColor: "#8B4CFC",
     alignItems: "center",
+    justifyContent: "center",
   },
 })
