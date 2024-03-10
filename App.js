@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar"
-import { StyleSheet } from "react-native"
+import { StyleSheet, Text } from "react-native"
 import { NavigationContainer } from "@react-navigation/native"
 import { createStackNavigator } from "@react-navigation/stack"
 import Footer from "./components/Footer"
@@ -11,7 +11,11 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Registration'>
-        <Stack.Screen name='Registration' component={Registration} />
+        <Stack.Screen
+          name='Registration'
+          component={Registration}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name='MainTabs'
           component={Footer}

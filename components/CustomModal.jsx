@@ -11,7 +11,7 @@ import { Button } from "react-native-paper"
 const CustomModal = ({ visible, onClose }) => {
   const [currentPage, setCurrentPage] = useState(0)
 
-  // эта хуйня нахуй не нужна, но без этого юзстейта приложение работать не хочет)0)
+  // эта не нужно, но без этого юзстейта приложение работать не хочет)0)
   const [countPage, setCountPage] = useState(0)
 
   const swiperRef = useRef(null)
@@ -92,10 +92,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   circle: {
-    width: 30, // Задайте ширину и высоту по вашему желанию
+    width: 30,
     height: 30,
-    borderRadius: 50, // Половина ширины (или высоты)
-    backgroundColor: "white", // Задайте цвет фона по вашему желанию
+    borderRadius: 50,
+    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     backgroundColor: "white",
-    width: "100%", // ширина модального окна
+    width: "100%",
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",

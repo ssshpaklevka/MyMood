@@ -15,15 +15,6 @@ export default function Footer() {
 
   const openModal = () => setModalVisible(true)
 
-  // function openModal() {
-  //   setModalVisible(true)
-  // }
-  // {
-  //   /* <CustomModal
-  //       visible={modalVisible}
-  //       onClose={() => setModalVisible(false)}
-  //     /> */
-  // }
   return (
     <>
       <CustomModal

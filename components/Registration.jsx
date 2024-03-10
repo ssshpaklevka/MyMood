@@ -3,11 +3,11 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   StyleSheet,
-  ScrollView,
+  TouchableOpacity,
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
+import { LinearGradient } from "expo-linear-gradient"
 import { initializeApp } from "@firebase/app"
 import {
   getAuth,
@@ -29,7 +29,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 
-//ДЛЯ НАСТРОЕК НАХУЙ
+//РЕГИСТРАЦИЯ\АВТОРИЗАЦИЯ
 export const AuthScreen = ({
   email,
   setEmail,
@@ -41,7 +41,9 @@ export const AuthScreen = ({
 }) => {
   return (
     <View style={styles.authContainer}>
-      <Text style={styles.title}>{isLogin ? "Sign In" : "Sign Up"}</Text>
+      <Text style={styles.title}>
+        {isLogin ? "Войти" : "Зарегистрироваться"}
+      </Text>
 
       <TextInput
         style={styles.input}
@@ -57,34 +59,30 @@ export const AuthScreen = ({
         placeholder='Password'
         secureTextEntry
       />
-      <View style={styles.buttonContainer}>
-        <Button
-          title={isLogin ? "Sign In" : "Sign Up"}
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <TouchableOpacity
+          style={styles.buttonContainer}
           onPress={handleAuthentication}
-          color='#3498db'
-        />
+        >
+          <Text style={styles.buttonText}>
+            {isLogin ? "Войти" : "Зарегистрироваться"}
+          </Text>
+        </TouchableOpacity>
       </View>
-
       <View style={styles.bottomContainer}>
         <Text style={styles.toggleText} onPress={() => setIsLogin(!isLogin)}>
           {isLogin
-            ? "Need an account? Sign Up"
-            : "Already have an account? Sign In"}
+            ? "Нет аккаунта? Зарегистрируйтесь"
+            : "Уже есть аккаунт? Войдите"}
         </Text>
       </View>
     </View>
   )
 }
-// ОКНО ПРИВЕТСТВИЯ И КНОПКА ВЫХОДА
 
+//ОКНО ПРИВЕТСТВИЯ И ВЫХОДА
 export const AuthenticatedScreen = ({ user, handleAuthentication }) => {
-  return (
-    <View style={styles.authContainer}>
-      <Text style={styles.title}>Welcome</Text>
-      <Text style={styles.emailText}>{user.email}</Text>
-      <Button title='Logout' onPress={handleAuthentication} color='#e74c3c' />
-    </View>
-  )
+  return <></>
 }
 export default App = () => {
   const [email, setEmail] = useState("")
@@ -104,17 +102,17 @@ export default App = () => {
   const handleAuthentication = async () => {
     try {
       if (user) {
-        // If user is already authenticated, log out
+        // Если пользователь уже аутентифицирован, выполняется выход
         console.log("User logged out successfully!")
         await signOut(auth)
       } else {
-        // Sign in or sign up
+        // Вход или регистрация
         if (isLogin) {
-          // Sign in
+          // Вход
           await signInWithEmailAndPassword(auth, email, password)
           console.log("User signed in successfully!")
         } else {
-          // Sign up
+          // Регистрация
           await createUserWithEmailAndPassword(auth, email, password)
           console.log("User created successfully!")
         }
@@ -124,28 +122,35 @@ export default App = () => {
       console.error("Authentication error:", error.message)
     }
   }
-
+  //ОТОБРАЖЕНИЕ ОКНА РЕГИСТРАЦИИ И АВТОРИЗАЦИИ
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {user ? (
-        // Show user's email if user is authenticated
-        <AuthenticatedScreen
-          user={user}
-          handleAuthentication={handleAuthentication}
-        />
-      ) : (
-        // Show sign-in or sign-up form if user is not authenticated
-        <AuthScreen
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-          isLogin={isLogin}
-          setIsLogin={setIsLogin}
-          handleAuthentication={handleAuthentication}
-        />
-      )}
-    </ScrollView>
+    <LinearGradient
+      style={{ flex: 1 }}
+      colors={["#EED3F2", "#FBDCBF"]}
+      start={{ x: 1, y: 1 }}
+      end={{ x: 0.5, y: 0 }}
+    >
+      <View style={styles.container}>
+        {user ? (
+          // Show user's email if user is authenticated
+          <AuthenticatedScreen
+            user={user}
+            handleAuthentication={handleAuthentication}
+          />
+        ) : (
+          // Show sign-in or sign-up form if user is not authenticated
+          <AuthScreen
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            isLogin={isLogin}
+            setIsLogin={setIsLogin}
+            handleAuthentication={handleAuthentication}
+          />
+        )}
+      </View>
+    </LinearGradient>
   )
 }
 const styles = StyleSheet.create({
@@ -153,19 +158,18 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
-    backgroundColor: "#f0f0f0",
   },
   authContainer: {
     width: "80%",
     maxWidth: 400,
     backgroundColor: "#fff",
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 18,
     elevation: 3,
   },
   title: {
     fontSize: 24,
+    fontWeight: "bold",
     marginBottom: 16,
     textAlign: "center",
   },
@@ -175,13 +179,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 16,
     padding: 8,
-    borderRadius: 4,
+    borderRadius: 18,
   },
   buttonContainer: {
-    marginBottom: 16,
+    width: "90%",
+    height: 50,
+    marginTop: 10,
+    borderRadius: 20,
+    backgroundColor: "#8B4CFC",
+    alignItems: "center",
+    justifyContent: "center",
   },
   toggleText: {
-    color: "#3498db",
+    fontSize: 15,
+    marginTop: 10,
+    color: "#8B4CFC",
     textAlign: "center",
   },
   bottomContainer: {

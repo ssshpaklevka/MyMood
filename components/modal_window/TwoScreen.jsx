@@ -1,15 +1,5 @@
-import React, { useState, useEffect } from "react"
-
-import {
-  Text,
-  View,
-  StyleSheet,
-  TextInput,
-  Image,
-  FlatList,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native"
+import React from "react"
+import { Text, View, StyleSheet, TextInput, ScrollView } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import Emoji from "../Emojis/Emoji"
 
@@ -63,7 +53,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    elevation: 3, // Добавьте тень (необязательно)
+    elevation: 3,
     marginTop: 25,
   },
   iconContainer: {

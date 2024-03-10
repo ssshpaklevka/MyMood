@@ -1,12 +1,5 @@
 import React, { useState } from "react"
-import {
-  View,
-  TextInput,
-  Button,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import * as SecureStore from "expo-secure-store"
 
 export default function ThreeScreen({ goNext }) {

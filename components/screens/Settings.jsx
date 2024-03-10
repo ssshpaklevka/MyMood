@@ -4,20 +4,22 @@ import { Text, View, StyleSheet } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { RadioButton } from "react-native-paper"
 import { LinearGradient } from "expo-linear-gradient"
-
-// Подключение шрифтов
-
-// const fonts = () =>
-//   Font.loadAsync({
-//     "pop-bold": require("../assets/fonts/Poppins-Bold.ttf"),
-//     "pop-medium": require("../assets/fonts/Poppins-Medium.ttf"),
-//     "pop-regular": require("../assets/fonts/Poppins-Regular.ttf"),
-//   })
+import { getAuth, signOut } from "@firebase/auth"
+import { useNavigation } from "@react-navigation/native"
 
 export default function Settings() {
-  // Шрифты
-  // const [font, setFont] = useState(false)
-  // if (font) {
+  const auth = getAuth()
+  const navigation = useNavigation()
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth)
+      console.log("User signed out successfully")
+      navigation.navigate("Registration")
+      // Действия после успешного выхода, например перенаправление на экран входа
+    } catch (error) {
+      console.error("Error signing out:", error)
+    }
+  }
 
   const [checkLang, setCheckLang] = useState("Russian")
 
@@ -29,9 +31,6 @@ export default function Settings() {
     setDark(dark)
     setCheckTheme(check)
   }
-
-  // Градиент
-  // ["#FFCEB7", "#BACFFF", "#C7CFF2"]
 
   return (
     <LinearGradient
@@ -178,22 +177,20 @@ export default function Settings() {
             </View>
           </View>
         </View>
+        <Text onPress={handleSignOut} style={styles.signOutButton}>
+          Выйти из аккаунта
+        </Text>
       </View>
     </LinearGradient>
   )
-  // Шрифты
-  // } else {
-  //   return (
-  //     <AppLoading
-  //       onError={console.warn}
-  //       startAsync={fonts}
-  //       onFinish={() => setFont(true)}
-  //     />
-  //   )
-  // }
 }
 
 const styles = StyleSheet.create({
+  signOutButton: {
+    marginTop: 20,
+    textAlign: "center",
+    color: "red",
+  },
   header: {
     marginLeft: 18,
     marginTop: 60,
