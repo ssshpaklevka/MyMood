@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient"
 import OneScreen from "./modal_window/OneScreen"
 import TwoScreen from "./modal_window/TwoScreen"
 import ThreeScreen from "./modal_window/ThreeScreen"
+import { FourScreen } from "./modal_window/FourScreen"
 import { Button } from "react-native-paper"
 
 const CustomModal = ({ visible, onClose }) => {
@@ -55,7 +56,7 @@ const CustomModal = ({ visible, onClose }) => {
           )}
 
           <View style={styles.counterPage}>
-            <Text style={{ fontSize: 16 }}>{currentPage + 1} / 3</Text>
+            <Text style={{ fontSize: 16 }}>{currentPage + 1} / 4</Text>
           </View>
 
           <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
@@ -76,6 +77,8 @@ const CustomModal = ({ visible, onClose }) => {
           <TwoScreen goNext={goNext} />
 
           <ThreeScreen goNext={goNext} />
+
+          <FourScreen goNext={goNext} />
         </Swiper>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           {/* МОЖЕТ НЕ ПОНАДОБИТСЯ, ЕСЛИ У МЕНЯ ПОЛУЧИТСЯ СДЕЛАТЬ КНОПКУ НАВИГАЦИИ В КАЖДОМ КОМПОНЕНТЕ ОТДЕЛЬНО  */}

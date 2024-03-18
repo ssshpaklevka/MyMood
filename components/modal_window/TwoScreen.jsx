@@ -1,7 +1,7 @@
 import React from "react"
 import { Text, View, StyleSheet, TextInput, ScrollView } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import Emoji from "../Emojis/Emoji"
+import Emoji from "../screenArr/Emoji"
 
 export default function TwoScreen({ goNext }) {
   return (

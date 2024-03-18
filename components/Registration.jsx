@@ -16,6 +16,7 @@ import {
   onAuthStateChanged,
   signOut,
 } from "@firebase/auth"
+import { getFirestore, doc, setDoc } from "@firebase/firestore"
 
 const firebaseConfig = {
   apiKey: "AIzaSyBR9L7dsf8iZ1y9Tv7eXvZA2Sujjryrc-E",
@@ -28,9 +29,13 @@ const firebaseConfig = {
 }
 
 const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const firestore = getFirestore(app) // Инициализация Firestore
 
 //РЕГИСТРАЦИЯ\АВТОРИЗАЦИЯ
 export const AuthScreen = ({
+  username,
+  setUsername,
   email,
   setEmail,
   password,
@@ -44,7 +49,14 @@ export const AuthScreen = ({
       <Text style={styles.title}>
         {isLogin ? "Войти" : "Зарегистрироваться"}
       </Text>
-
+      <TextInput
+        style={styles.input}
+        value={username}
+        onChangeText={setUsername}
+        placeholder='Username'
+        autoCapitalize='none'
+      />
+      {/* Поле для логина */}
       <TextInput
         style={styles.input}
         value={email}
@@ -85,6 +97,7 @@ export const AuthenticatedScreen = ({ user, handleAuthentication }) => {
   return <></>
 }
 export default App = () => {
+  const [username, setUsername] = useState("") // Добавлено состояние для логина пользователя
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null) // Track user authentication state
@@ -93,33 +106,39 @@ export default App = () => {
   const auth = getAuth(app)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
-      setUser(user)
+      if (user) {
+        // Пользователь в системе, переходим на Home
+        navigation.navigate("MainTabs")
+      }
     })
 
     return () => unsubscribe()
   }, [auth])
 
   const handleAuthentication = async () => {
-    try {
-      if (user) {
-        // Если пользователь уже аутентифицирован, выполняется выход
-        console.log("User logged out successfully!")
-        await signOut(auth)
-      } else {
-        // Вход или регистрация
-        if (isLogin) {
-          // Вход
-          await signInWithEmailAndPassword(auth, email, password)
-          console.log("User signed in successfully!")
-        } else {
-          // Регистрация
-          await createUserWithEmailAndPassword(auth, email, password)
-          console.log("User created successfully!")
-        }
+    // Вход или регистрация
+    if (isLogin) {
+      // Вход
+      await signInWithEmailAndPassword(auth, email, password)
+      console.log("User signed in successfully!")
+    } else {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        )
+        const user = userCredential.user
+        // Сохраняем логин в Firestore
+        console.log(username) //ПРОВЕРКА ВВОДА ЛОГИНА
+        await setDoc(doc(firestore, "users", user.uid), {
+          username: username,
+        })
+        console.log("User registered and username saved in Firestore.")
+        navigation.navigate("MainTabs")
+      } catch (error) {
+        console.error("Registration error: ", error.message)
       }
-      navigation.navigate("MainTabs")
-    } catch (error) {
-      console.error("Authentication error:", error.message)
     }
   }
   //ОТОБРАЖЕНИЕ ОКНА РЕГИСТРАЦИИ И АВТОРИЗАЦИИ
@@ -140,6 +159,8 @@ export default App = () => {
         ) : (
           // Show sign-in or sign-up form if user is not authenticated
           <AuthScreen
+            username={username}
+            setUsername={setUsername}
             email={email}
             setEmail={setEmail}
             password={password}

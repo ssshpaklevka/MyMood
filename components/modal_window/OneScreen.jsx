@@ -1,29 +1,49 @@
 import React, { useState } from "react"
-import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Button,
-} from "react-native"
+import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native"
 import { useNavigation } from "@react-navigation/native"
-import * as SecureStore from "expo-secure-store"
+import { useModalData } from "./ModalDataContext"
 
 export default function OneScreen({ goNext }) {
   const navigation = useNavigation()
 
+  const { updateModalData } = useModalData() // Используется хук для доступа к контексту
+
+  const handleContinue = () => {
+    updateModalData("selectedEmoji", selectedEmoji) // Обновляем контекст выбранным эмодзи
+    goNext() // Переходим к следующей странице
+  }
+
   const [selectedEmoji, setSelectedEmoji] = useState("")
+
+  const handleEmojiSelection = emojiKey => {
+    setSelectedEmoji(emojiKey) // Сохраняем выбор пользователя в локальном состоянии
+  }
+
   const emojis = [
-    { key: "Angry", img: require("../../assets/img/angryface.png") },
-    { key: "Sad", img: require("../../assets/img/sadface.png") },
-    { key: "Neutral", img: require("../../assets/img/neutralface.png") },
-    { key: "Smile", img: require("../../assets/img/smileface.png") },
-    { key: "Happy", img: require("../../assets/img/happyface.png") },
+    {
+      key: "Angry",
+      url: "https://firebasestorage.googleapis.com/v0/b/mymood-7ee08.appspot.com/o/emoji%2Fangryface.png?alt=media&token=b1e281b1-a62b-49af-82d0-0a03fc26ff3a",
+    },
+    {
+      key: "Sad",
+      url: "https://firebasestorage.googleapis.com/v0/b/mymood-7ee08.appspot.com/o/emoji%2Fsadface.png?alt=media&token=a08427e9-da48-4d44-9c1a-950788a46d82",
+    },
+    {
+      key: "Neutral",
+      url: "https://firebasestorage.googleapis.com/v0/b/mymood-7ee08.appspot.com/o/emoji%2Fneutralface.png?alt=media&token=cb6384a0-0fb5-4902-9814-64a9bd7f84f3",
+    },
+    {
+      key: "Smile",
+      url: "https://firebasestorage.googleapis.com/v0/b/mymood-7ee08.appspot.com/o/emoji%2Fsmileface.png?alt=media&token=1a4b2127-4ea3-4b22-828b-058ca2ccb46e",
+    },
+    {
+      key: "Happy",
+      url: "https://firebasestorage.googleapis.com/v0/b/mymood-7ee08.appspot.com/o/emoji%2Fhappyface.png?alt=media&token=86632886-60f7-406f-a1a3-ff074c602ee2",
+    },
   ]
 
-  const getBackgroundColor = emojiKey => {
-    switch (emojiKey) {
+  const getBackgroundColor = emojisKey => {
+    switch (emojisKey) {
       case "Angry":
         return "#FF1F11"
       case "Sad":
@@ -53,9 +73,7 @@ export default function OneScreen({ goNext }) {
             {emojis.map(emojis => (
               <TouchableOpacity
                 key={emojis.key}
-                onPress={async () => {
-                  setSelectedEmoji(emojis.key) // устанавливается выбранный emoji
-                }}
+                onPress={() => handleEmojiSelection(emojis.key)}
                 style={[
                   styles.emojiButton,
                   {
@@ -67,7 +85,10 @@ export default function OneScreen({ goNext }) {
                 ]}
               >
                 <View styles={styles.circle}>
-                  <Image source={emojis.img} style={styles.emojiImage} />
+                  <Image
+                    source={{ uri: emojis.url }}
+                    style={styles.emojiImage}
+                  />
                 </View>
               </TouchableOpacity>
             ))}
@@ -85,7 +106,7 @@ export default function OneScreen({ goNext }) {
         </View>
       </View>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity style={styles.button} onPress={goNext}>
+        <TouchableOpacity style={styles.button} onPress={handleContinue}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </View>
@@ -164,6 +185,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   button: {
+    marginTop: 215,
     width: 360,
     height: 60,
     borderRadius: 30,

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { Text, View, StyleSheet, ScrollView, Button } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
+import { getAuth } from "firebase/auth"
+import { getFirestore, doc, getDoc } from "firebase/firestore"
 import * as SecureStore from "expo-secure-store"
 
 export default function Home() {
@@ -76,6 +78,27 @@ export default function Home() {
   //   }
   // }, [])
 
+  const [username, setUsername] = useState("")
+  const auth = getAuth()
+  const firestore = getFirestore()
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const userDoc = await getDoc(
+        doc(firestore, "users", auth.currentUser.uid)
+      )
+      if (userDoc.exists()) {
+        setUsername(userDoc.data().username)
+      } else {
+        console.log("No such document!")
+      }
+    }
+
+    if (auth.currentUser) {
+      fetchUsername()
+    }
+  }, [auth, firestore])
+
   return (
     <LinearGradient
       style={{ flex: 1 }}
@@ -86,6 +109,10 @@ export default function Home() {
       <ScrollView>
         <View style={styles.header}>
           <Text style={styles.headerText}>Home</Text>
+        </View>
+        <View>
+          {/* Отображение логина пользователя */}
+          <Text>Welcome, {username}</Text>
         </View>
         {/* {storedData.map((item, index) => (
           <Text key={index}>

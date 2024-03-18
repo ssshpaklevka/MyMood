@@ -1,67 +1,37 @@
 import React, { useState } from "react"
-import {
-  View,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  Button,
-} from "react-native"
+import { View, Image, TouchableOpacity, Text, StyleSheet } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
-import * as SecureStore from "expo-secure-store"
+import { useModalData } from "../modal_window/ModalDataContext"
 
 export default function Emoji({ goNext }) {
   const [selectedEmojis, setSelectedEmojis] = useState([])
+  const { updateModalData } = useModalData() // Используется контекст
 
   // Обработчик нажатия так, чтобы он добавлял эмодзи или удалял его, если тот уже выбран
 
-  const toggleEmojiSelection = async emojiKey => {
-    const index = selectedEmojis.indexOf(emojiKey)
-    let newSelectedEmojis = [...selectedEmojis]
+  // const toggleEmojiSelection = async emojiKey => {
+  //   const index = selectedEmojis.indexOf(emojiKey)
+  //   let newSelectedEmojis = [...selectedEmojis]
 
-    if (index > -1) {
-      // Удаляем эмодзи, если он уже был выбран
-      newSelectedEmojis.splice(index, 1)
-    } else {
-      // Добавляем эмодзи, если он еще не был выбран
-      newSelectedEmojis.push(emojiKey)
-    }
+  //   if (index > -1) {
+  //     // Удаляем эмодзи, если он уже был выбран
+  //     newSelectedEmojis.splice(index, 1)
+  //   } else {
+  //     // Добавляем эмодзи, если он еще не был выбран
+  //     newSelectedEmojis.push(emojiKey)
+  //   }
+
+  const toggleEmojiSelection = emojiKey => {
+    const newSelectedEmojis = selectedEmojis.includes(emojiKey)
+      ? selectedEmojis.filter(e => e !== emojiKey) // Удаляем эмодзи, если он уже был выбран
+      : [...selectedEmojis, emojiKey] // Добавляем эмодзи, если он еще не был выбран
+
     setSelectedEmojis(newSelectedEmojis)
   }
 
-  async function saveEmojisSelection() {
-    try {
-      const currentEmojisJson = await SecureStore.getItemAsync(
-        "emojiSelections"
-      )
-      const currentEmojis = currentEmojisJson
-        ? JSON.parse(currentEmojisJson)
-        : []
-
-      //Добавление выбранных эмодзи с timestap
-
-      selectedEmojis.forEach(emojiKey => {
-        currentEmojis.push({
-          emoji: emojiKey,
-          timestamp: new Date().toISOString,
-        })
-      })
-
-      //Сортировка массива по timestamp
-
-      currentEmojis.sort(
-        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-      )
-
-      await SecureStore.setItemAsync(
-        "emojiSelections",
-        JSON.stringify(currentEmojis)
-      )
-      console.log("Эмоджи успешно сохранились!")
-    } catch (error) {
-      console.log("Ошибка сохранения", error)
-    }
+  const handleContinue = () => {
+    updateModalData("selectedEmojis", selectedEmojis) // Обновляем данные в контексте при нажатии на кнопку "Продолжить"
+    goNext() // Переходим к следующей странице
   }
 
   const emojis = [
@@ -94,14 +64,19 @@ export default function Emoji({ goNext }) {
       <View style={styles.emojiSelect}>
         {emojis.map(emojis => (
           <TouchableOpacity
+            key={emojis.key} //ВОЗМОЖНО НАДО БУДЕТ УДАЛИТЬ
             style={{ alignItems: "center", marginTop: 25 }}
-            onPress={() => toggleEmojiSelection(emojis.key)}
+            onPress={() => toggleEmojiSelection(emojis.img)}
           >
             <View style={styles.elipseEmoji}>
               <LinearGradient
                 style={styles.circleGradient}
                 // ДЛЯ КРУЖОЧКЕВ ЕСЛИ ЧТО МОЖНО ИСПОЛЬЗОВАТЬ ЕЩЕ ТАКОЙ ГРАДИЕНТ: #E5F3FF
-                colors={["#D3E0EB", "#E5F3FF"]}
+                colors={
+                  selectedEmojis.includes(emojis.img)
+                    ? ["#FFFFFF", "#FFFFFF"] //ЦВЕТ ВЫБРАННЫХ ЭМОДЖИ
+                    : ["#D3E0EB", "#E5F3FF"] //ЦВЕТ НЕ ВЫБРАННЫХ ЭМОДЖИ
+                }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 0 }}
               >
@@ -113,7 +88,7 @@ export default function Emoji({ goNext }) {
         ))}
       </View>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity style={styles.button} onPress={goNext}>
+        <TouchableOpacity style={styles.button} onPress={handleContinue}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </View>
@@ -144,6 +119,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   button: {
+    marginTop: 20,
     width: 360,
     height: 60,
     borderRadius: 30,
